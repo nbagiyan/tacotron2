@@ -97,14 +97,14 @@ def warm_start_model(checkpoint_path, model, ignore_layers):
 
 
 def load_checkpoint(checkpoint_path, model, optimizer):
-    assert os.path.isfile(checkpoint_path)
-    print("Loading checkpoint '{}'".format(checkpoint_path))
-    checkpoint_dict = torch.load(checkpoint_path, map_location='cpu')
-    model.load_state_dict(checkpoint_dict['state_dict'])
-    optimizer.load_state_dict(checkpoint_dict['optimizer'])
-    learning_rate = checkpoint_dict['learning_rate']
-    iteration = checkpoint_dict['iteration']
-    print("Loaded checkpoint '{}' from iteration {}" .format(
+    if os.path.exists(checkpoint_path):
+        print("Loading checkpoint '{}'".format(checkpoint_path))
+        checkpoint_dict = torch.load(checkpoint_path, map_location='cpu')
+        model.load_state_dict(checkpoint_dict['state_dict'])
+        optimizer.load_state_dict(checkpoint_dict['optimizer'])
+        learning_rate = checkpoint_dict['learning_rate']
+        iteration = checkpoint_dict['iteration']
+        print("Loaded checkpoint '{}' from iteration {}" .format(
         checkpoint_path, iteration))
     return model, optimizer, learning_rate, iteration
 
@@ -115,7 +115,8 @@ def save_checkpoint(model, optimizer, learning_rate, iteration, filepath):
     torch.save({'iteration': iteration,
                 'state_dict': model.state_dict(),
                 'optimizer': optimizer.state_dict(),
-                'learning_rate': learning_rate}, filepath)
+                'learning_rate': learning_rate}, './checkpoint.pt')
+    os.system(f'mv checkpoint.pt {filepath}')
 
 
 def validate(model, criterion, valset, iteration, batch_size, n_gpus,
@@ -247,8 +248,8 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
                          hparams.batch_size, n_gpus, collate_fn, logger,
                          hparams.distributed_run, rank)
                 if rank == 0:
-                    checkpoint_path = os.path.join(
-                        output_directory, "checkpoint_{}".format(iteration))
+                    # checkpoint_path = os.path.join(
+                    #     output_directory, "checkpoint_{}".format(iteration))
                     save_checkpoint(model, optimizer, learning_rate, iteration,
                                     checkpoint_path)
 

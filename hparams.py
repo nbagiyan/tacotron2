@@ -25,15 +25,15 @@ def create_hparams(hparams_string=None, verbose=False):
         # Data Parameters             #
         ################################
         load_mel_from_disk=False,
-        training_files='filelists/ljs_audio_text_train_filelist.txt',
-        validation_files='filelists/ljs_audio_text_val_filelist.txt',
-        text_cleaners=['english_cleaners'],
-
+        training_files='train.txt',
+        validation_files='val.txt',
+        text_cleaners=['basic_cleaners'],
+        sort_by_length=False,
         ################################
         # Audio Parameters             #
         ################################
         max_wav_value=32768.0,
-        sampling_rate=22050,
+        sampling_rate=16000,
         filter_length=1024,
         hop_length=256,
         win_length=1024,
@@ -51,6 +51,13 @@ def create_hparams(hparams_string=None, verbose=False):
         encoder_kernel_size=5,
         encoder_n_convolutions=3,
         encoder_embedding_dim=512,
+
+        prosody_n_convolutions=6,
+        prosody_conv_dim_in=[1, 32, 32, 64, 64, 128],
+        prosody_conv_dim_out=[32, 32, 64, 64, 128, 128],
+        prosody_conv_kernel=3,
+        prosody_conv_stride=2,
+        prosody_embedding_dim=128,
 
         # Decoder parameters
         n_frames_per_step=1,  # currently only 1 is supported
@@ -82,7 +89,19 @@ def create_hparams(hparams_string=None, verbose=False):
         weight_decay=1e-6,
         grad_clip_thresh=1.0,
         batch_size=64,
-        mask_padding=True  # set model's padded outputs to padded values
+        mask_padding=True,  # set model's padded outputs to padded values
+
+        E=512,
+        ref_enc_filters=[32, 32, 64, 64, 128, 128],
+        ref_enc_size=[3, 3],
+        ref_enc_strides=[2, 2],
+        ref_enc_pad=[1, 1],
+        ref_enc_gru_size=512 // 2,
+
+        # Style Token Layer
+        token_num=10,
+        num_heads=8,
+        n_mels=80,
     )
 
     if hparams_string:
