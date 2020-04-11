@@ -505,7 +505,7 @@ class Tacotron2(nn.Module):
         try:
             encoder_outputs = self.encoder(embedded_inputs, text_lengths)
         except:
-            print(text_lengths, text_inputs, mels)
+            print(text_lengths,)
             raise
         gst_outputs = self.gst(mels)
         gst_outputs = gst_outputs.expand_as(encoder_outputs)
