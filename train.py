@@ -213,7 +213,7 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
 
             model.zero_grad()
             x, y = model.parse_batch(batch)
-            if torch.all(x[1] > 0) and torch.all(x[-1] > 0) and (x[-2] > 0) :
+            if torch.all(x[1].data > 0) and torch.all(x[-1].data > 0) and (x[-2] > 0):
                 y_pred = model(x)
 
                 loss = criterion(y_pred, y)
