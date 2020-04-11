@@ -500,13 +500,8 @@ class Tacotron2(nn.Module):
     def forward(self, inputs):
         text_inputs, text_lengths, mels, max_len, output_lengths = inputs
         text_lengths, output_lengths = text_lengths.data, output_lengths.data
-        print(text_lengths, text_inputs, torch.all(text_lengths > 0))
         embedded_inputs = self.embedding(text_inputs).transpose(1, 2)
-        try:
-            encoder_outputs = self.encoder(embedded_inputs, text_lengths)
-        except:
-            print(text_lengths, torch.all(text_lengths > 0))
-            raise
+        encoder_outputs = self.encoder(embedded_inputs, text_lengths)
         gst_outputs = self.gst(mels)
         gst_outputs = gst_outputs.expand_as(encoder_outputs)
 
