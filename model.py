@@ -502,9 +502,11 @@ class Tacotron2(nn.Module):
         text_lengths, output_lengths = text_lengths.data, output_lengths.data
 
         embedded_inputs = self.embedding(text_inputs).transpose(1, 2)
-
-        encoder_outputs = self.encoder(embedded_inputs, text_lengths)
-
+        try:
+            encoder_outputs = self.encoder(embedded_inputs, text_lengths)
+        except:
+            print(text_lengths, text_inputs, mels)
+            raise
         gst_outputs = self.gst(mels)
         gst_outputs = gst_outputs.expand_as(encoder_outputs)
 
