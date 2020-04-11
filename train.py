@@ -115,9 +115,7 @@ def save_checkpoint(model, optimizer, learning_rate, iteration, filepath):
     torch.save({'iteration': iteration,
                 'state_dict': model.state_dict(),
                 'optimizer': optimizer.state_dict(),
-                'learning_rate': learning_rate}, './checkpoint.pt')
-    os.system(f'mv checkpoint.pt {filepath}')
-
+                'learning_rate': learning_rate}, filepath)
 
 def validate(model, criterion, valset, iteration, batch_size, n_gpus,
              collate_fn, logger, distributed_run, rank):
@@ -251,8 +249,8 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
                              hparams.batch_size, n_gpus, collate_fn, logger,
                              hparams.distributed_run, rank)
                     if rank == 0:
-                        # checkpoint_path = os.path.join(
-                        #     output_directory, "checkpoint_{}".format(iteration))
+                        checkpoint_path = os.path.join(
+                            output_directory, "checkpoint_{}".format(iteration))
                         save_checkpoint(model, optimizer, learning_rate, iteration,
                                         checkpoint_path)
 
