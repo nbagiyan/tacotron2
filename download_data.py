@@ -19,7 +19,8 @@ def walk_dir_and_write(dir1, dir2, f):
             if os.path.exists(text_path):
                 with open(text_path, 'r') as txt:
                     text = txt.read().strip()
-                f.write(f"./data/{dir1}/{dir2}/{file}|{text}\n")
+                    if len(text) > 0:
+                        f.write(f"./data/{dir1}/{dir2}/{file}|{text}\n")
 
 
 if __name__ == '__main__':
