@@ -211,50 +211,48 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
 
             model.zero_grad()
             x, y = model.parse_batch(batch)
-            text_inputs, text_lengths, mels, max_len, output_lengths = x
-            text_lengths, output_lengths = text_lengths.data, output_lengths.data
-            if torch.all(text_lengths > 0) and torch.all(output_lengths > 0):
-                y_pred = model(x)
+            y_pred = model(x)
 
-                loss = criterion(y_pred, y)
-                if hparams.distributed_run:
-                    reduced_loss = reduce_tensor(loss.data, n_gpus).item()
-                else:
-                    reduced_loss = loss.item()
-                if hparams.fp16_run:
-                    with amp.scale_loss(loss, optimizer) as scaled_loss:
-                        scaled_loss.backward()
-                else:
-                    loss.backward()
+            loss = criterion(y_pred, y)
+            if hparams.distributed_run:
+                reduced_loss = reduce_tensor(loss.data, n_gpus).item()
+            else:
+                reduced_loss = loss.item()
+            if hparams.fp16_run:
+                with amp.scale_loss(loss, optimizer) as scaled_loss:
+                    scaled_loss.backward()
+            else:
+                loss.backward()
 
-                if hparams.fp16_run:
-                    grad_norm = torch.nn.utils.clip_grad_norm_(
-                        amp.master_params(optimizer), hparams.grad_clip_thresh)
-                    is_overflow = math.isnan(grad_norm)
-                else:
-                    grad_norm = torch.nn.utils.clip_grad_norm_(
-                        model.parameters(), hparams.grad_clip_thresh)
+            if hparams.fp16_run:
+                grad_norm = torch.nn.utils.clip_grad_norm_(
+                    amp.master_params(optimizer), hparams.grad_clip_thresh)
+                is_overflow = math.isnan(grad_norm)
+            else:
+                grad_norm = torch.nn.utils.clip_grad_norm_(
+                    model.parameters(), hparams.grad_clip_thresh)
 
-                optimizer.step()
+            optimizer.step()
+            torch.cuda.empty_cache()
 
-                if not is_overflow and rank == 0:
-                    duration = time.perf_counter() - start
-                    print("Train loss {} {:.6f} Grad Norm {:.6f} {:.2f}s/it".format(
-                        iteration, reduced_loss, grad_norm, duration))
-                    logger.log_training(
-                        reduced_loss, grad_norm, learning_rate, duration, iteration)
+            if not is_overflow and rank == 0:
+                duration = time.perf_counter() - start
+                print("Train loss {} {:.6f} Grad Norm {:.6f} {:.2f}s/it".format(
+                    iteration, reduced_loss, grad_norm, duration))
+                logger.log_training(
+                    reduced_loss, grad_norm, learning_rate, duration, iteration)
 
-                if not is_overflow and (iteration % hparams.iters_per_checkpoint == 0):
-                    validate(model, criterion, valset, iteration,
-                             hparams.batch_size, n_gpus, collate_fn, logger,
-                             hparams.distributed_run, rank)
-                    if rank == 0:
-                        checkpoint_path = os.path.join(
-                            output_directory, "checkpoint_{}".format(iteration))
-                        save_checkpoint(model, optimizer, learning_rate, iteration,
-                                        checkpoint_path)
+            if not is_overflow and (iteration % hparams.iters_per_checkpoint == 0):
+                validate(model, criterion, valset, iteration,
+                         hparams.batch_size, n_gpus, collate_fn, logger,
+                         hparams.distributed_run, rank)
+                if rank == 0:
+                    checkpoint_path = os.path.join(
+                        output_directory, "checkpoint_{}".format(iteration))
+                    save_checkpoint(model, optimizer, learning_rate, iteration,
+                                    checkpoint_path)
 
-                iteration += 1
+            iteration += 1
 
 
 if __name__ == '__main__':
