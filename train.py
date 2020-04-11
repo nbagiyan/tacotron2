@@ -216,6 +216,7 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
             text_inputs, text_lengths, mels, max_len, output_lengths = x
             text_lengths, output_lengths = text_lengths.data, output_lengths.data
             if torch.all(text_lengths > 0) and torch.all(output_lengths > 0):
+                print(text_lengths)
                 y_pred = model(x)
 
                 loss = criterion(y_pred, y)
