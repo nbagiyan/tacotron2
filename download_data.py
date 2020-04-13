@@ -20,7 +20,7 @@ def walk_dir_and_write(dir1, dir2, f):
             if os.path.exists(text_path):
                 with open(text_path, 'r') as txt:
                     text = txt.read().strip()
-                    _, data = read(file)
+                    _, data = read('./data/' + file)
                     if len(text) > 15 and len(data) != 0:
                         f.write(f"./data/{dir1}/{dir2}/{file}|{text}\n")
 
