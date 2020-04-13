@@ -1,4 +1,5 @@
 import os
+from scipy.io.wavfile import read
 
 links = [
     "https://www.dropbox.com/s/s3ahqeggg9muba2/wav_tts_part1.zip",
@@ -19,7 +20,8 @@ def walk_dir_and_write(dir1, dir2, f):
             if os.path.exists(text_path):
                 with open(text_path, 'r') as txt:
                     text = txt.read().strip()
-                    if len(text) > 15:
+                    _, data = read(file)
+                    if len(text) > 15 and len(data) != 0:
                         f.write(f"./data/{dir1}/{dir2}/{file}|{text}\n")
 
 
