@@ -4,6 +4,7 @@ import numpy as np
 from scipy.io.wavfile import read
 from get_mel import get_mel
 from hparams import create_hparams
+from tqdm.auto import tqdm
 
 
 links = [
@@ -48,8 +49,8 @@ if __name__ == '__main__':
     first_level = os.listdir('./data/')
 
     train = open('train.txt', 'w')
-    for dir1 in first_level[:-1]:
-        for dir2 in os.listdir(f"./data/{dir1}/"):
+    for dir1 in tqdm(first_level[:-1]):
+        for dir2 in tqdm(os.listdir(f"./data/{dir1}/")):
             walk_dir_and_write(dir1, dir2, train)
     train.close()
 
