@@ -25,14 +25,14 @@ def embed_utterance(fpaths, encoder_model_fpath):
     np.save(embed_fpath, embed, allow_pickle=False)
     
  
-def create_embeddings(synthesizer_root: Path, encoder_model_fpath: Path, n_processes: int):
+def create_embeddings(synthesizer_root: Path, encoder_model_fpath: Path, embeds_path: Path, n_processes: int):
 #     wav_dir = synthesizer_root.joinpath("audio")
 #     metadata_fpath = synthesizer_root.joinpath("train.txt")
 #     assert wav_dir.exists() and metadata_fpath.exists()
     print("Path", synthesizer_root)
     wav_paths = glob.glob(str(synthesizer_root) + "/*/*/*.wav")
 #     print(wav_paths)
-    embed_dir = synthesizer_root.joinpath("embeds")
+    embed_dir = embeds_path.joinpath("embeds")
     embed_dir.mkdir(exist_ok=True)
     
     # Gather the input wave filepath and the target output embed filepath
@@ -61,6 +61,10 @@ if __name__ == "__main__":
     parser.add_argument("--synthesizer_root",default="d/SV2TTS/synthesizer/", type=Path, help=\
         "Path to the synthesizer training data that contains the audios and the train.txt file. "
         "If you let everything as default, it should be <datasets_root>/SV2TTS/synthesizer/.")
+    
+    parser.add_argument("--save_path",default="d/embeds/", type=Path, help=\
+    "Path to save embeds")
+        
     parser.add_argument("-e", "--encoder_model_fpath", type=Path, 
                         default="encoder/saved_models/pretrained.pt", help=\
         "Path your trained encoder model.")

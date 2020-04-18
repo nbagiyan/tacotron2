@@ -13,7 +13,7 @@ links = [
 ]
 
 
-def walk_dir_and_write(dir1, dir2, f):
+def walk_dir_and_write(dir1, dir2, f, emb_dir):
     for file in os.listdir(f"./data/{dir1}/{dir2}"):
         if '.wav' in file:
             text_path = f"./data/{dir1}/{dir2}/{file.split('.')[0] + '.txt'}"
@@ -22,7 +22,7 @@ def walk_dir_and_write(dir1, dir2, f):
                     text = txt.read().strip()
                     _, data = read(f"./data/{dir1}/{dir2}/{file}")
                     if len(text) > 15 and len(data) != 0:
-                        f.write(f"./data/{dir1}/{dir2}/{file}|{text}|./data/embeds/{dir1}_{dir2}_{file}.npy\n")
+                        f.write(f"/data/vogorjachko/data/{dir1}/{dir2}/{file}|{text}|{emb_dir}/embeds/{dir1}_{dir2}_{file}.npy\n")
 
 
 if __name__ == '__main__':
@@ -38,12 +38,13 @@ if __name__ == '__main__':
     first_level = os.listdir('./data/')
 
     train = open('train.txt', 'w')
+    emb_dir = "/data/vogorjachko"
     for dir1 in first_level[:-1]:
         for dir2 in os.listdir(f"./data/{dir1}/"):
-            walk_dir_and_write(dir1, dir2, train)
+            walk_dir_and_write(dir1, dir2, train, emb_dir)
     train.close()
 
     val = open('val.txt', 'w')
     for dir2 in os.listdir(f"./data/{first_level[-1]}/"):
-        walk_dir_and_write(first_level[-1], dir2, val)
+        walk_dir_and_write(first_level[-1], dir2, val, emb_dir)
     val.close()

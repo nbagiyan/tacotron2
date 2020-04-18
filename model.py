@@ -507,7 +507,7 @@ class Tacotron2(nn.Module):
         gst_outputs = gst_outputs.expand_as(encoder_outputs)
 
         encoder_outputs += gst_outputs
-        encoder_outputs += embs.repeat([1, 2])
+        encoder_outputs += embs.repeat([1, 2])[:, None, :]
         
         mel_outputs, gate_outputs, alignments = self.decoder(
             encoder_outputs, mels, memory_lengths=text_lengths)
@@ -525,6 +525,7 @@ class Tacotron2(nn.Module):
         gst_outputs = self.gst(mels)
         gst_outputs = gst_outputs.expand_as(encoder_outputs)
         encoder_outputs += gst_outputs
+
         encoder_outputs += embs.repeat([1, 2])
         
         mel_outputs, gate_outputs, alignments = self.decoder.inference(
