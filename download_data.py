@@ -22,15 +22,17 @@ def walk_dir_and_write(dir1, dir2, f):
     for file in os.listdir(f"./data/{dir1}/{dir2}"):
         if '.wav' in file:
             text_path = f"./data/{dir1}/{dir2}/{file.split('.')[0] + '.txt'}"
+            audio_path = f"./data/{dir1}/{dir2}/{file}"
             if os.path.exists(text_path):
                 with open(text_path, 'r') as txt:
                     text = txt.read().strip()
-                    _, data = read(f"./data/{dir1}/{dir2}/{file}")
+                    _, data = read(audio_path)
+
                     if 4 < len(text.split()) < 25 and len(data) != 0:
-                        mel = get_mel(hparams, f"./data/{dir1}/{dir2}/{file}")
-                        os.system(f"rm ./data/{dir1}/{dir2}/{file}")
-                        np.save(f"/data/{dir1}/{dir2}/{file}", mel.cpu().numpy())
-                        f.write(f"/data/{dir1}/{dir2}/{file}|{text}\n")
+                        mel = get_mel(hparams, audio_path)
+                        os.system(f"rm {audio_path}")
+                        np.save(f"{audio_path}", mel.cpu().numpy())
+                        f.write(f"{audio_path}|{text}\n")
 
 
 if __name__ == '__main__':
