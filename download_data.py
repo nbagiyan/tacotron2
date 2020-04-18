@@ -1,5 +1,10 @@
 import os
+import numpy as np
+
 from scipy.io.wavfile import read
+from get_mel import get_mel
+from hparams import create_hparams
+
 
 links = [
     "https://www.dropbox.com/s/s3ahqeggg9muba2/wav_tts_part1.zip",
@@ -21,11 +26,15 @@ def walk_dir_and_write(dir1, dir2, f):
                 with open(text_path, 'r') as txt:
                     text = txt.read().strip()
                     _, data = read(f"./data/{dir1}/{dir2}/{file}")
-                    if len(text) > 15 and len(data) != 0:
-                        f.write(f"./data/{dir1}/{dir2}/{file}|{text}\n")
+                    if 4 < len(text.split()) < 25 and len(data) != 0:
+                        mel = get_mel(hparams, f"./data/{dir1}/{dir2}/{file}")
+                        os.system(f"rm ./data/{dir1}/{dir2}/{file}")
+                        np.save(f"/data/{dir1}/{dir2}/{file}", mel.cpu().numpy())
+                        f.write(f"/data/{dir1}/{dir2}/{file}|{text}\n")
 
 
 if __name__ == '__main__':
+    hparams = create_hparams()
     os.system("mkdir data")
     for link in links:
         os.system(f"wget {link}")
