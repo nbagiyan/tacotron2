@@ -28,7 +28,9 @@ def walk_dir_and_write(dir1, dir2, f):
                 with open(text_path, 'r') as txt:
                     text = txt.read().strip()
                     _, data = read(audio_path)
-                    if 4 < len(text.split()) < 25 and len(data) != 0:
+                    bytes_ = os.path.getsize(audio_path) - 44
+                    mels = bytes_ / 512
+                    if 4 < len(text.split()) < 25 and len(data) != 0 and mels < 800:
                         f.write(f"{audio_path}|{text}\n")
 
 
