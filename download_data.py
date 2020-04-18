@@ -22,15 +22,16 @@ def walk_dir_and_write(dir1, dir2, f):
                     text = txt.read().strip()
                     _, data = read(f"./data/{dir1}/{dir2}/{file}")
                     if len(text) > 15 and len(data) != 0:
-                        f.write(f"./data/{dir1}/{dir2}/{file}|{text}\n")
+                        f.write(f"./data/{dir1}/{dir2}/{file}|{text}|./data/embeds/{dir1}_{dir2}_{file}.npy\n")
 
 
 if __name__ == '__main__':
-    os.system("mkdir data")
-    for link in links:
-        os.system(f"wget {link}")
-        os.system(f"unzip {link.split('/')[-1]} -d data")
-        os.system(f"rm -rf {link.split('/')[-1]}")
+#     os.system("mkdir data")
+#     for link in links:
+#         os.system(f"wget {link}")
+#         os.system(f"unzip {link.split('/')[-1]} -d data")
+#         os.system(f"rm -rf {link.split('/')[-1]}")
+#         break
 
     train = []
     val = []
