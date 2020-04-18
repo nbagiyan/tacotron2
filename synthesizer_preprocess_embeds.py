@@ -32,7 +32,7 @@ def create_embeddings(synthesizer_root: Path, encoder_model_fpath: Path, save_pa
     print("Path", synthesizer_root)
     wav_paths = glob.glob(str(synthesizer_root) + "/*/*/*.wav")
 #     print(wav_paths)
-    embed_dir = embeds_path.joinpath("embeds")
+    embed_dir = save_path.joinpath("embeds")
     embed_dir.mkdir(exist_ok=True)
     
     # Gather the input wave filepath and the target output embed filepath
