@@ -470,6 +470,7 @@ class Tacotron2(nn.Module):
         self.decoder = Decoder(hparams)
         self.postnet = Postnet(hparams)
         self.gst = GST(hparams)
+        self.linear_expand = nn.Linear(256, hparams.encoder_embedding_dim)
 
     def parse_batch(self, batch):
         text_padded, input_lengths, mel_padded, gate_padded, \
@@ -507,7 +508,8 @@ class Tacotron2(nn.Module):
         gst_outputs = gst_outputs.expand_as(encoder_outputs)
 
         encoder_outputs += gst_outputs
-        encoder_outputs += embs.repeat([1, 2])[:, None, :]
+        embs_expanded = self.linear_expand(embs)
+        encoder_outputs += embs_expanded[:, None, :]
         
         mel_outputs, gate_outputs, alignments = self.decoder(
             encoder_outputs, mels, memory_lengths=text_lengths)
@@ -526,7 +528,8 @@ class Tacotron2(nn.Module):
         gst_outputs = gst_outputs.expand_as(encoder_outputs)
         encoder_outputs += gst_outputs
 
-        encoder_outputs += embs.repeat([1, 2])
+        embs_expanded = self.linear_expand(embs)
+        encoder_outputs += embs_expanded[:, None, :]
         
         mel_outputs, gate_outputs, alignments = self.decoder.inference(
             encoder_outputs)

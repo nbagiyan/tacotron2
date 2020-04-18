@@ -25,7 +25,7 @@ def embed_utterance(fpaths, encoder_model_fpath):
     np.save(embed_fpath, embed, allow_pickle=False)
     
  
-def create_embeddings(synthesizer_root: Path, encoder_model_fpath: Path, embeds_path: Path, n_processes: int):
+def create_embeddings(synthesizer_root: Path, encoder_model_fpath: Path, save_path: Path, n_processes: int):
 #     wav_dir = synthesizer_root.joinpath("audio")
 #     metadata_fpath = synthesizer_root.joinpath("train.txt")
 #     assert wav_dir.exists() and metadata_fpath.exists()
