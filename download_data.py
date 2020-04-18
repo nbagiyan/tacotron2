@@ -28,12 +28,8 @@ def walk_dir_and_write(dir1, dir2, f):
                 with open(text_path, 'r') as txt:
                     text = txt.read().strip()
                     _, data = read(audio_path)
-
                     if 4 < len(text.split()) < 25 and len(data) != 0:
-                        mel = get_mel(hparams, audio_path)
-                        os.system(f"rm {audio_path}")
-                        np.save(f"{audio_path.split('.')[0]}", mel.cpu().numpy())
-                        f.write(f"{audio_path.split('.')[0]}|{text}\n")
+                        f.write(f"{audio_path}|{text}\n")
 
 
 if __name__ == '__main__':
