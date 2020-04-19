@@ -31,6 +31,7 @@ class ReferenceEncoder(nn.Module):
 
     def forward(self, inputs):
         N = inputs.size(0)
+        inputs = inputs.transpose(1, 2)
         out = inputs.view(N, 1, -1, self.n_mels)  # [N, 1, Ty, n_mels]
         for conv, bn in zip(self.convs, self.bns):
             out = conv(out)
