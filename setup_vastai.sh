@@ -16,4 +16,5 @@ pip install matplotlib \
 git clone https://github.com/NVIDIA/apex
 cd apex && pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
 
-python download_data.py
+git clone https://github.com/nbagiyan/tacotron2.git
+cd tacotron2 && python download_data.py
