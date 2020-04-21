@@ -5,7 +5,7 @@ from multiprocessing import Pool
 
 def convert_to_wav(filename):
     in_file = f'../clips/{filename}'
-    out_file = f'../mozilla_wavs/{filename.replace("mp3", "wav")}'
+    out_file = f'./mozilla_wavs/{filename.replace("mp3", "wav")}'
     os.system(
         f'ffmpeg -i {in_file} -ar 16000 {out_file}'
     )
