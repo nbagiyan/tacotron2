@@ -14,9 +14,9 @@ def convert_to_wav(filename):
 
 if __name__ == '__main__':
     os.system("mkdir mozilla_wavs")
-    train = pd.read_csv('./train.tsv', sep='\t')
-    dev = pd.read_csv('./dev.tsv', sep='\t')
-    test = pd.read_csv('./test.tsv', sep='\t')
+    train = pd.read_csv('../train.tsv', sep='\t')
+    dev = pd.read_csv('../dev.tsv', sep='\t')
+    test = pd.read_csv('../test.tsv', sep='\t')
 
     train = pd.concat([train, dev], ignore_index=True)
 
