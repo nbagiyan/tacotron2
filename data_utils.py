@@ -91,7 +91,6 @@ class TextMelCollate():
         # Right zero-pad mel-spec
         num_mels = batch[0][1].size(0)
         max_target_len = max([x[1].size(1) for x in batch])
-        target_len = [x[1].size(1) for x in batch]
         if max_target_len % self.n_frames_per_step != 0:
             max_target_len += self.n_frames_per_step - max_target_len % self.n_frames_per_step
             assert max_target_len % self.n_frames_per_step == 0
@@ -109,4 +108,4 @@ class TextMelCollate():
             output_lengths[i] = mel.size(1)
 
         return text_padded, input_lengths, mel_padded, gate_padded, \
-            output_lengths, target_len
+            output_lengths

@@ -498,11 +498,11 @@ class Tacotron2(nn.Module):
         return outputs
 
     def forward(self, inputs):
-        text_inputs, text_lengths, mels, max_len, output_lengths, target_len = inputs
+        text_inputs, text_lengths, mels, max_len, output_lengths = inputs
         text_lengths, output_lengths = text_lengths.data, output_lengths.data
         embedded_inputs = self.embedding(text_inputs).transpose(1, 2)
         encoder_outputs = self.encoder(embedded_inputs, text_lengths)
-        gst_outputs = self.gst(mels, target_len)
+        gst_outputs = self.gst(mels, output_lengths)
         gst_outputs = gst_outputs.expand_as(encoder_outputs)
 
         encoder_outputs += gst_outputs
