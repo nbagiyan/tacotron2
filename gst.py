@@ -126,7 +126,7 @@ class GST(nn.Module):
         self.encoder = ReferenceEncoder(hp)
         self.stl = STL(hp)
 
-    def forward(self, inputs):
-        enc_out = self.encoder(inputs)
+    def forward(self, inputs, inputs_lenghts):
+        enc_out = self.encoder(inputs, inputs_lenghts)
         style_embed = self.stl(enc_out)
         return style_embed
