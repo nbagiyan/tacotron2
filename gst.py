@@ -46,12 +46,8 @@ class ReferenceEncoder(nn.Module):
 
         hidden_indexes = self.calculate_channels(inputs_lenghts, 3, 2, 1, self.K) - 1
         hidden_states, out = self.gru(out)  # out --- [1, N, E//2]
-        masks = hidden_indexes \
-            .unsqueeze(0) \
-            .unsqueeze(2) \
-            .expand(1, hidden_states.size(1), hidden_states.size(2))
-        out = out.gather(0, masks)
-        return out.squeeze(0)
+        out = hidden_states[torch.arange(N), hidden_indexes]
+        return out
 
     @staticmethod
     def calculate_channels(L, kernel_size, stride, pad, n_convs):
