@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.init as init
 import torch.nn.functional as F
 
+
 class ReferenceEncoder(nn.Module):
     '''
     inputs --- [N, Ty/r, n_mels*r]  mels
@@ -29,7 +30,7 @@ class ReferenceEncoder(nn.Module):
                           batch_first=True)
         self.n_mels = hp.n_mels
 
-    def forward(self, inputs):
+    def forward(self, inputs, inputs_lenghts):
         N = inputs.size(0)
         inputs = inputs.transpose(1, 2)
         out = inputs.view(N, 1, -1, self.n_mels)  # [N, 1, Ty, n_mels]
@@ -43,11 +44,17 @@ class ReferenceEncoder(nn.Module):
         N = out.size(0)
         out = out.contiguous().view(N, T, -1)  # [N, Ty//2^K, 128*n_mels//2^K]
 
-        _, out = self.gru(out)  # out --- [1, N, E//2]
-
+        hidden_indexes = self.calculate_channels(inputs_lenghts, 3, 2, 1, self.K) - 1
+        hidden_states, out = self.gru(out)  # out --- [1, N, E//2]
+        masks = hidden_indexes \
+            .unsqueeze(0) \
+            .unsqueeze(2) \
+            .expand(1, hidden_states.size(1), hidden_states.size(2))
+        out = out.gather(0, masks)
         return out.squeeze(0)
 
-    def calculate_channels(self, L, kernel_size, stride, pad, n_convs):
+    @staticmethod
+    def calculate_channels(L, kernel_size, stride, pad, n_convs):
         for _ in range(n_convs):
             L = (L - kernel_size + 2 * pad) // stride + 1
         return L
@@ -57,6 +64,7 @@ class STL(nn.Module):
     '''
     inputs --- [N, E//2]
     '''
+
     def __init__(self, hp):
         super().__init__()
         self.embed = nn.Parameter(torch.FloatTensor(hp.token_num, hp.E // hp.num_heads))
@@ -83,6 +91,7 @@ class MultiHeadAttention(nn.Module):
     output:
         out --- [N, T_q, num_units]
     '''
+
     def __init__(self, query_dim, key_dim, num_units, num_heads):
         super().__init__()
         self.num_units = num_units
@@ -124,5 +133,4 @@ class GST(nn.Module):
     def forward(self, inputs):
         enc_out = self.encoder(inputs)
         style_embed = self.stl(enc_out)
-
         return style_embed
