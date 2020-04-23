@@ -504,7 +504,7 @@ class Tacotron2(nn.Module):
         text_lengths, output_lengths = text_lengths.data, output_lengths.data
         embedded_inputs = self.embedding(text_inputs).transpose(1, 2)
         encoder_outputs = self.encoder(embedded_inputs, text_lengths)
-        gst_outputs = self.gst(mels)
+        gst_outputs = self.gst(mels, output_lengths)
         gst_outputs = gst_outputs.expand_as(encoder_outputs)
         embs_expanded = self.linear_expand(embs)
         
