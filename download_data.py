@@ -42,7 +42,7 @@ if __name__ == '__main__':
         os.system(f"unzip {link.split('/')[-1]} -d data")
         os.system(f"rm -rf {link.split('/')[-1]}")
     os.system(f"wget https://www.dropbox.com/s/5ak061h8r7ylzzr/new_embs.zip")
-    os.system(f"unzip {link.split('/')[-1]}")
+    os.system(f"unzip new_embs.zip")
     train = []
     val = []
     first_level = os.listdir('./data/')
