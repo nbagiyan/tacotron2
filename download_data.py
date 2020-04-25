@@ -19,7 +19,7 @@ links = [
 ]
 
 
-def walk_dir_and_write(dir1, dir2, f, emb_dir):
+def walk_dir_and_write(dir1, dir2, f):
     for file in os.listdir(f"./data/{dir1}/{dir2}"):
         if '.wav' in file:
             text_path = f"./data/{dir1}/{dir2}/{file.split('.')[0] + '.txt'}"
@@ -31,7 +31,7 @@ def walk_dir_and_write(dir1, dir2, f, emb_dir):
                     bytes_ = os.path.getsize(audio_path) - 44
                     mels = bytes_ / 512
                     if 4 < len(text.split()) < 25 and len(data) != 0 and mels < 800:
-                        f.write(f"{audio_path}|{text}|{emb_dir}/embeds/{dir1}_{dir2}_{file}.npy\n")
+                        f.write(f"{audio_path}|{text}|./embedings/embeds/{dir1}/{dir2}/{file}.npy\n")
 
 
 if __name__ == '__main__':
@@ -41,9 +41,8 @@ if __name__ == '__main__':
         os.system(f"wget {link}")
         os.system(f"unzip {link.split('/')[-1]} -d data")
         os.system(f"rm -rf {link.split('/')[-1]}")
-    os.system(f"wget ")
-    emb_dir = "/data/vogorjachko"
-    os.system(f"unzip {link.split('/')[-1]} -d {emb_dir}")
+    os.system(f"wget https://www.dropbox.com/s/5ak061h8r7ylzzr/new_embs.zip")
+    os.system(f"unzip {link.split('/')[-1]}")
     train = []
     val = []
     first_level = os.listdir('./data/')
@@ -52,10 +51,10 @@ if __name__ == '__main__':
     
     for dir1 in tqdm(first_level[:-1]):
         for dir2 in tqdm(os.listdir(f"./data/{dir1}/")):
-            walk_dir_and_write(dir1, dir2, train, emb_dir)
+            walk_dir_and_write(dir1, dir2, train)
     train.close()
 
     val = open('val.txt', 'w')
     for dir2 in os.listdir(f"./data/{first_level[-1]}/"):
-        walk_dir_and_write(first_level[-1], dir2, val, emb_dir)
+        walk_dir_and_write(first_level[-1], dir2, val)
     val.close()
