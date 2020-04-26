@@ -102,6 +102,10 @@ def create_hparams(hparams_string=None, verbose=False):
         token_num=10,
         num_heads=8,
         n_mels=80,
+
+        # Nirvana path
+        nirvana_checkpoint_path='./checkpoint.pt',
+        nirvana_tensorboard_path='./events.tar'
     )
 
     if hparams_string:

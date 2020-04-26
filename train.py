@@ -105,17 +105,19 @@ def load_checkpoint(checkpoint_path, model, optimizer):
         learning_rate = checkpoint_dict['learning_rate']
         iteration = checkpoint_dict['iteration']
         print("Loaded checkpoint '{}' from iteration {}" .format(
-        checkpoint_path, iteration))
+            checkpoint_path, iteration))
     return model, optimizer, learning_rate, iteration
 
 
-def save_checkpoint(model, optimizer, learning_rate, iteration, filepath):
+def save_checkpoint(model, optimizer, learning_rate, iteration, filepath, nirvana_path):
     print("Saving model and optimizer state at iteration {} to {}".format(
         iteration, filepath))
     torch.save({'iteration': iteration,
                 'state_dict': model.state_dict(),
                 'optimizer': optimizer.state_dict(),
                 'learning_rate': learning_rate}, filepath)
+    os.system(f"cp {filepath} {nirvana_path}")
+
 
 def validate(model, criterion, valset, iteration, batch_size, n_gpus,
              collate_fn, logger, distributed_run, rank):
@@ -193,7 +195,7 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
                 checkpoint_path, model, hparams.ignore_layers)
         else:
             model, optimizer, _learning_rate, iteration = load_checkpoint(
-                checkpoint_path, model, optimizer)
+                hparams.nirvana_checkpoint_path, model, optimizer)
             if hparams.use_saved_learning_rate:
                 learning_rate = _learning_rate
             iteration += 1  # next iteration is iteration + 1
@@ -250,7 +252,7 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
                     checkpoint_path = os.path.join(
                         output_directory, "checkpoint_{}".format(iteration))
                     save_checkpoint(model, optimizer, learning_rate, iteration,
-                                    checkpoint_path)
+                                    checkpoint_path, hparams.nirvana_checkpoint_path)
 
             iteration += 1
 

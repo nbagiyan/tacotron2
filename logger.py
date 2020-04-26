@@ -1,5 +1,7 @@
 import random
 import torch
+import os
+
 from torch.utils.tensorboard import SummaryWriter
 from plotting_utils import plot_alignment_to_numpy, plot_spectrogram_to_numpy
 from plotting_utils import plot_gate_outputs_to_numpy
@@ -16,7 +18,7 @@ class Tacotron2Logger(SummaryWriter):
             self.add_scalar("learning.rate", learning_rate, iteration)
             self.add_scalar("duration", duration, iteration)
 
-    def log_validation(self, reduced_loss, model, y, y_pred, iteration):
+    def log_validation(self, reduced_loss, model, y, y_pred, iteration, nirvana_path):
         self.add_scalar("validation.loss", reduced_loss, iteration)
         _, mel_outputs, gate_outputs, alignments = y_pred
         mel_targets, gate_targets = y
@@ -46,3 +48,6 @@ class Tacotron2Logger(SummaryWriter):
                 gate_targets[idx].data.cpu().numpy(),
                 torch.sigmoid(gate_outputs[idx]).data.cpu().numpy()),
             iteration, dataformats='HWC')
+
+        file_name = os.listdir()[0]
+        os.system(f"tar -cf {nirvana_path} {file_name}")

@@ -14,6 +14,7 @@ links = [
     "https://www.dropbox.com/s/q5qtpc9x5wcewab/wav_tts_part4.zip",
     "https://www.dropbox.com/s/uwcscnb8gvkx175/wav_tts_part5.zip",
     "https://www.dropbox.com/s/96rquckkerwvseo/wav_tts_part6.zip",
+    "https://www.dropbox.com/s/04waaap74k9lzf0/ours.zip",
     # "https://www.dropbox.com/s/4gq4c334e6w59a5/wav_tts_part7.zip",
     # "https://www.dropbox.com/s/lonm42nyv0f8jse/wav_tts_part8.zip"
 ]
@@ -56,3 +57,5 @@ if __name__ == '__main__':
     for dir2 in os.listdir(f"./data/{first_level[-1]}/"):
         walk_dir_and_write(first_level[-1], dir2, val)
     val.close()
+
+    os.system("mkdir outdir")
