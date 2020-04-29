@@ -96,10 +96,13 @@ def warm_start_model(checkpoint_path, model, ignore_layers):
     return model
 
 
-def load_checkpoint(checkpoint_path, model, optimizer):
+def load_checkpoint(checkpoint_path, model, optimizer, nirvana_checkpoint_path):
     if os.path.exists(checkpoint_path):
         print("Loading checkpoint '{}'".format(checkpoint_path))
-        checkpoint_dict = torch.load(checkpoint_path, map_location='cpu')
+        try:
+            checkpoint_dict = torch.load(checkpoint_path, map_location='cpu')
+        except:
+            print("Training from zero")
         model.load_state_dict(checkpoint_dict['state_dict'])
         optimizer.load_state_dict(checkpoint_dict['optimizer'])
         learning_rate = checkpoint_dict['learning_rate']
@@ -116,7 +119,7 @@ def save_checkpoint(model, optimizer, learning_rate, iteration, filepath, nirvan
                 'state_dict': model.state_dict(),
                 'optimizer': optimizer.state_dict(),
                 'learning_rate': learning_rate}, filepath)
-    os.system(f"cp {filepath} {nirvana_path}")
+    os.system(f"mv {filepath} {nirvana_path}")
 
 
 def validate(model, criterion, valset, iteration, batch_size, n_gpus,
@@ -243,11 +246,13 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
                     iteration, reduced_loss, grad_norm, duration))
                 logger.log_training(
                     reduced_loss, grad_norm, learning_rate, duration, iteration)
+                os.system("tar -cf log.tar ./outdir/logdir")
+                os.system(f"mv log.tar {hparams.nirvana_tensorboard_path}")
 
             if not is_overflow and (iteration % hparams.iters_per_checkpoint == 0):
                 validate(model, criterion, valset, iteration,
                          hparams.batch_size, n_gpus, collate_fn, logger,
-                         hparams.distributed_run, rank, hparams.nirvana_tensorboard_path)
+                         hparams.distributed_run, rank)
                 if rank == 0:
                     checkpoint_path = os.path.join(
                         output_directory, "checkpoint_{}".format(iteration))
