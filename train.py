@@ -82,21 +82,24 @@ def load_model(hparams):
 
 
 def warm_start_model(checkpoint_path, model, ignore_layers):
-    assert os.path.isfile(checkpoint_path)
-    print("Warm starting model from checkpoint '{}'".format(checkpoint_path))
-    checkpoint_dict = torch.load(checkpoint_path, map_location='cpu')
-    model_dict = checkpoint_dict['state_dict']
-    if len(ignore_layers) > 0:
-        model_dict = {k: v for k, v in model_dict.items()
-                      if k not in ignore_layers}
-        dummy_dict = model.state_dict()
-        dummy_dict.update(model_dict)
-        model_dict = dummy_dict
-    model.load_state_dict(model_dict)
-    return model
+    if os.path.exists(checkpoint_path):
+        print("Warm starting model from checkpoint '{}'".format(checkpoint_path))
+        try:
+            checkpoint_dict = torch.load(checkpoint_path, map_location='cpu')
+        except:
+            print("Training from zero")
+        model_dict = checkpoint_dict['state_dict']
+        if len(ignore_layers) > 0:
+            model_dict = {k: v for k, v in model_dict.items()
+                          if k not in ignore_layers}
+            dummy_dict = model.state_dict()
+            dummy_dict.update(model_dict)
+            model_dict = dummy_dict
+        model.load_state_dict(model_dict)
+        return model
 
 
-def load_checkpoint(checkpoint_path, model, optimizer, nirvana_checkpoint_path):
+def load_checkpoint(checkpoint_path, model, optimizer):
     if os.path.exists(checkpoint_path):
         print("Loading checkpoint '{}'".format(checkpoint_path))
         try:
