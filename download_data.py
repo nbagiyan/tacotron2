@@ -49,7 +49,11 @@ if __name__ == '__main__':
 
     train = open('train.txt', 'w')
     for dir1 in tqdm(first_level[:-1]):
+        if dir1 == '.DS_Store':
+            continue
         for dir2 in tqdm(os.listdir(f"./data/{dir1}/")):
+            if dir2 == '.DS_Store':
+                continue
             walk_dir_and_write(dir1, dir2, train)
     train.close()
 

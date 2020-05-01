@@ -126,7 +126,7 @@ def save_checkpoint(model, optimizer, learning_rate, iteration, filepath, nirvan
 
 
 def validate(model, criterion, valset, iteration, batch_size, n_gpus,
-             collate_fn, logger, distributed_run, rank, nirvana_path):
+             collate_fn, logger, distributed_run, rank):
     """Handles all the validation scoring and printing"""
     model.eval()
     with torch.no_grad():
