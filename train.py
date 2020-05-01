@@ -112,7 +112,7 @@ def load_checkpoint(checkpoint_path, model, optimizer):
         iteration = checkpoint_dict['iteration']
         print("Loaded checkpoint '{}' from iteration {}" .format(
             checkpoint_path, iteration))
-    return model, optimizer, learning_rate, iteration
+        return model, optimizer, learning_rate, iteration
 
 
 def save_checkpoint(model, optimizer, learning_rate, iteration, filepath, nirvana_path):
