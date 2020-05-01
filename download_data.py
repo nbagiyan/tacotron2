@@ -14,7 +14,7 @@ links = [
     "https://www.dropbox.com/s/q5qtpc9x5wcewab/wav_tts_part4.zip",
     "https://www.dropbox.com/s/uwcscnb8gvkx175/wav_tts_part5.zip",
     "https://www.dropbox.com/s/96rquckkerwvseo/wav_tts_part6.zip",
-    "https://www.dropbox.com/s/04waaap74k9lzf0/ours.zip",
+    "https://www.dropbox.com/s/4qtrsaq1576yloq/ours.zip",
     # "https://www.dropbox.com/s/4gq4c334e6w59a5/wav_tts_part7.zip",
     # "https://www.dropbox.com/s/lonm42nyv0f8jse/wav_tts_part8.zip"
 ]
