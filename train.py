@@ -56,7 +56,7 @@ def prepare_dataloaders(hparams):
                               sampler=train_sampler,
                               batch_size=hparams.batch_size, pin_memory=False,
                               drop_last=True, collate_fn=collate_fn)
-    return train_loader, valset, collate_fn
+    return train_loader, valset, collate_fn, train_sampler
 
 
 def prepare_directories_and_logger(output_directory, log_directory, rank):
@@ -82,7 +82,7 @@ def load_model(hparams):
 
 
 def warm_start_model(checkpoint_path, model, ignore_layers):
-    if os.path.exists(checkpoint_path):
+    if checkpoint_path is not None and os.path.exists(checkpoint_path):
         print("Warm starting model from checkpoint '{}'".format(checkpoint_path))
         try:
             checkpoint_dict = torch.load(checkpoint_path, map_location='cpu')
@@ -100,7 +100,7 @@ def warm_start_model(checkpoint_path, model, ignore_layers):
 
 
 def load_checkpoint(checkpoint_path, model, optimizer):
-    if os.path.exists(checkpoint_path):
+    if checkpoint_path is not None and os.path.exists(checkpoint_path):
         print("Loading checkpoint '{}'".format(checkpoint_path))
         try:
             checkpoint_dict = torch.load(checkpoint_path, map_location='cpu')
@@ -190,7 +190,7 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
     logger = prepare_directories_and_logger(
         output_directory, log_directory, rank)
 
-    train_loader, valset, collate_fn = prepare_dataloaders(hparams)
+    train_loader, valset, collate_fn, train_sampler = prepare_dataloaders(hparams)
 
     # Load checkpoint if one exists
     iteration = 0
@@ -212,6 +212,8 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
     # ================ MAIN TRAINNIG LOOP! ===================
     for epoch in range(epoch_offset, hparams.epochs):
         print("Epoch: {}".format(epoch))
+        if train_sampler is not None:
+            train_sampler.set_epoch(epoch)
         for i, batch in enumerate(train_loader):
             start = time.perf_counter()
             for param_group in optimizer.param_groups:
@@ -241,7 +243,6 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
                     model.parameters(), hparams.grad_clip_thresh)
 
             optimizer.step()
-            torch.cuda.empty_cache()
 
             if not is_overflow and rank == 0:
                 duration = time.perf_counter() - start
