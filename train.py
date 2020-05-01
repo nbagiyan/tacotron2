@@ -150,7 +150,7 @@ def validate(model, criterion, valset, iteration, batch_size, n_gpus,
     model.train()
     if rank == 0:
         print("Validation loss {}: {:9f}  ".format(iteration, val_loss))
-        logger.log_validation(val_loss, model, y, y_pred, iteration, nirvana_path)
+        logger.log_validation(val_loss, model, y, y_pred, iteration)
 
 
 def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
