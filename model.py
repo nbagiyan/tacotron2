@@ -521,7 +521,7 @@ class Tacotron2(nn.Module):
             [mel_outputs, mel_outputs_postnet, gate_outputs, alignments],
             output_lengths)
 
-    def inference(self, inputs, mels, input_lenghts, gst_outputs=None):
+    def inference(self, inputs, mels, input_lenghts, embs, gst_outputs=None):
         embedded_inputs = self.embedding(inputs).transpose(1, 2)
         encoder_outputs = self.encoder.inference(embedded_inputs)
         if gst_outputs is None:
