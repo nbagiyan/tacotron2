@@ -29,10 +29,11 @@ class TextMelLoader(torch.utils.data.Dataset):
 
     def get_mel_text_pair(self, audiopath_and_text):
         # separate filename and text
-        audiopath, text = audiopath_and_text[0], audiopath_and_text[1]
+        audiopath, text, asr_features = audiopath_and_text[0], audiopath_and_text[1], audiopath_and_text[2]
         text = self.get_text(text)
         mel = self.get_mel(audiopath)
-        return (text, mel)
+        asr_features = torch.FloatTensor(np.load(asr_features).astype(np.float32))
+        return (text, mel, asr_features)
 
     def get_mel(self, filename):
         if not self.load_mel_from_disk:
@@ -67,8 +68,9 @@ class TextMelLoader(torch.utils.data.Dataset):
 class TextMelCollate():
     """ Zero-pads model inputs and targets based on number of frames per setep
     """
-    def __init__(self, n_frames_per_step):
+    def __init__(self, n_frames_per_step, asr_vocabulary_size):
         self.n_frames_per_step = n_frames_per_step
+        self.asr_vocabulary_size = asr_vocabulary_size
 
     def __call__(self, batch):
         """Collate's training batch from normalized text and mel-spectrogram
@@ -107,5 +109,16 @@ class TextMelCollate():
             gate_padded[i, mel.size(1)-1:] = 1
             output_lengths[i] = mel.size(1)
 
+        input_lengths_asr, ids_sorted_decreasing_asr = torch.sort(
+            torch.LongTensor([len(x[-1]) for x in batch]),
+            dim=0, descending=True)
+
+        max_target_len_asr = max([x[-1].size(1) for x in batch])
+        asr_padded = torch.FloatTensor(len(batch), self.asr_vocabulary_size, max_target_len_asr)
+        asr_padded.zero_()
+        for i in range(len(ids_sorted_decreasing_asr)):
+            asr = batch[ids_sorted_decreasing_asr[i]][-1]
+            asr_padded[i, :, :asr.size(1)] = asr
+
         return text_padded, input_lengths, mel_padded, gate_padded, \
-            output_lengths
+            output_lengths, asr_padded

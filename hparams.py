@@ -34,9 +34,9 @@ def create_hparams(hparams_string=None, verbose=False):
         ################################
         max_wav_value=32768.0,
         sampling_rate=16000,
-        filter_length=1024,
-        hop_length=256,
-        win_length=1024,
+        filter_length=960,
+        hop_length=240,
+        win_length=960,
         n_mel_channels=80,
         mel_fmin=0.0,
         mel_fmax=8000.0,
@@ -81,6 +81,10 @@ def create_hparams(hparams_string=None, verbose=False):
         postnet_kernel_size=5,
         postnet_n_convolutions=5,
 
+        # ASR features parameters
+
+        asr_features_dim=256,
+        asr_vocabulary_size=1000,
         ################################
         # Optimization Hyperparameters #
         ################################
