@@ -44,6 +44,11 @@ if __name__ == '__main__':
         os.system(f"rm -rf {link.split('/')[-1]}")
     os.system(f"wget https://www.dropbox.com/s/5ak061h8r7ylzzr/new_embs.zip")
     os.system(f"unzip new_embs.zip")
+
+    os.system("wget https://www.dropbox.com/s/t7t1q3wid3k41mo/ours_emb.zip")
+    os.system("unzip ours_emb.zip")
+    os.system("mv ours ./embedings/embeds/")
+
     train = []
     val = []
     first_level = os.listdir('./data/')
