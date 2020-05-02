@@ -32,7 +32,7 @@ def walk_dir_and_write(dir1, dir2, f):
                     bytes_ = os.path.getsize(audio_path) - 44
                     mels = bytes_ / 512
                     if 4 < len(text.split()) < 25 and len(data) != 0 and mels < 800:
-                        f.write(f"{audio_path}|{text}\n")
+                        f.write(f"{audio_path}|{text}|./embedings/embeds/{dir1}/{dir2}/{file}.npy\n")
 
 
 if __name__ == '__main__':
@@ -42,12 +42,14 @@ if __name__ == '__main__':
         os.system(f"wget {link}")
         os.system(f"unzip {link.split('/')[-1]} -d data")
         os.system(f"rm -rf {link.split('/')[-1]}")
-
+    os.system(f"wget https://www.dropbox.com/s/5ak061h8r7ylzzr/new_embs.zip")
+    os.system(f"unzip new_embs.zip")
     train = []
     val = []
     first_level = os.listdir('./data/')
 
     train = open('train.txt', 'w')
+    
     for dir1 in tqdm(first_level[:-1]):
         if dir1 == '.DS_Store':
             continue
