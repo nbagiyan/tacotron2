@@ -12,18 +12,17 @@ import os
 import glob
 from scipy.io.wavfile import read
 
-def embed_utterance(fpaths, encoder_model_fpath):
+def embed_utterance(wav_fpath, encoder_model_fpath):
     if not encoder.is_loaded():
         encoder.load_model(encoder_model_fpath)
 
     # Compute the speaker embedding of the utterance
-    wav_fpath, embed_fpath = fpaths
 #     wav = np.load(wav_fpath)
     sampling_rate, wav = read(wav_fpath)
     wav = encoder.preprocess_wav(wav)
     embed = encoder.embed_utterance(wav)
-    np.save(embed_fpath, embed, allow_pickle=False)
-    
+    return embed
+
  
 def create_embeddings(synthesizer_root: Path, encoder_model_fpath: Path, save_path: Path, n_processes: int):
 #     wav_dir = synthesizer_root.joinpath("audio")
